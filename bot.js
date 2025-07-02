@@ -1,9 +1,10 @@
-bot.start((ctx) => ctx.reply('Бот работает!'));
+
 import { Telegraf } from 'telegraf';
 import axios from 'axios';
 
 const bot = new Telegraf('8147984791:AAG-wpGksEE2g0bZDmeTXxf9VPtCct5K7dM');
 
+bot.start((ctx) => ctx.reply("Бот работает!"));
 // 1. Обработка заявок на бронирование (пример)
 bot.command('booking', async (ctx) => {
   // Здесь твоя логика отправки заявки заказчику
