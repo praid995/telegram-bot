@@ -1,3 +1,4 @@
+bot.start((ctx) => ctx.reply('Бот работает!'));
 import { Telegraf } from 'telegraf';
 import axios from 'axios';
 
