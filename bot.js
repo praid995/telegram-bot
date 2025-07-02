@@ -1,5 +1,5 @@
-const { Telegraf } = require('telegraf');
-const axios = require('axios');
+import { Telegraf } from 'telegraf';
+import axios from 'axios';
 
 const bot = new Telegraf('8147984791:AAG-wpGksEE2g0bZDmeTXxf9VPtCct5K7dM');
 
@@ -15,11 +15,11 @@ bot.on('callback_query', async (ctx) => {
   if (data.startsWith('publish_')) {
     const id = data.replace('publish_', '');
     // Вызов Google Apps Script для публикации
-    await axios.get(`https://script.google.com/macros/s/AKfycbxq2vcx2TWWPTSyE92tBaqKTrLZw9Z3kphAa9SVYKoEAgU87xc71fTPn9p4WCYZv8smvw/exec{id}`);
+    await axios.get(`https://script.google.com/macros/s/AKfycbxq2vcx2TWWPTSyE92tBaqKTrLZw9Z3kphAa9SVYKoEAgU87xc71fTPn9p4WCYZv8smvw/exec?action=publish&id=${id}`);
     await ctx.reply('Отзыв опубликован!');
   } else if (data.startsWith('reject_')) {
     const id = data.replace('reject_', '');
-    await axios.get(`https://script.google.com/macros/s/AKfycbxq2vcx2TWWPTSyE92tBaqKTrLZw9Z3kphAa9SVYKoEAgU87xc71fTPn9p4WCYZv8smvw/exec{id}`);
+    await axios.get(`https://script.google.com/macros/s/AKfycbxq2vcx2TWWPTSyE92tBaqKTrLZw9Z3kphAa9SVYKoEAgU87xc71fTPn9p4WCYZv8smvw/exec?action=reject&id=${id}`);
     await ctx.reply('Отзыв отклонён.');
   }
   ctx.answerCbQuery();
