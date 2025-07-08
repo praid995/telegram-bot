@@ -1,42 +1,84 @@
+import { Telegraf } from "telegraf";
+import axios from "axios";
+import fs from "fs";
+import path from "path";
 
-import { Telegraf } from 'telegraf';
-import axios from 'axios';
+const bot = new Telegraf("8147984791:AAG-wpGksEE2g0bZDmeTXxf9VPtCct5K7dM");
 
-const bot = new Telegraf('8147984791:AAG-wpGksEE2g0bZDmeTXxf9VPtCct5K7dM');
-
+// 1. Приветствие
 bot.start((ctx) => ctx.reply("Бот работает!"));
-// 1. Обработка заявок на бронирование (пример)
-bot.command('booking', async (ctx) => {
-  // Здесь твоя логика отправки заявки заказчику
-  // Например, ctx.reply('Новая заявка на бронирование...');
-});
 
-// 2. Обработка callback-кнопок для отзывов
-bot.on('callback_query', async (ctx) => {
-  const data = ctx.callbackQuery.data;
-  if (data.startsWith('publish_')) {
-    const id = data.replace('publish_', '');
-    // Вызов Google Apps Script для публикации
-    await axios.get(`https://script.google.com/macros/s/AKfycbxq2vcx2TWWPTSyE92tBaqKTrLZw9Z3kphAa9SVYKoEAgU87xc71fTPn9p4WCYZv8smvw/exec?action=publish&id=${id}`);
-    await ctx.reply('Отзыв опубликован!');
-  } else if (data.startsWith('reject_')) {
-    const id = data.replace('reject_', '');
-    await axios.get(`https://script.google.com/macros/s/AKfycbxq2vcx2TWWPTSyE92tBaqKTrLZw9Z3kphAa9SVYKoEAgU87xc71fTPn9p4WCYZv8smvw/exec?action=reject&id=${id}`);
-    await ctx.reply('Отзыв отклонён.');
+// 2. Команда бронирования даты
+bot.command("booking", async (ctx) => {
+  // Пример: пользователь пишет /booking 2025-07-10
+  const parts = ctx.message.text.split(" ");
+  if (parts.length < 2) {
+    return ctx.reply(
+      "Пожалуйста, укажите дату в формате ГГГГ-ММ-ДД, например: /booking 2025-07-10",
+    );
   }
-  ctx.answerCbQuery();
+  const date = parts[1];
+  await axios.post(
+    "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?type=booking",
+    {
+      date,
+      source: "telegram",
+      comment: `Бронирование через Telegram от ${ctx.from.username || ctx.from.first_name || ""}`,
+    },
+  );
+  await ctx.reply(`Дата ${date} забронирована!`);
 });
 
-// 3. (Опционально) Обработка фото для галереи
-bot.on('photo', async (ctx) => {
-  // Получаем файл
-  const fileId = ctx.message.photo[ctx.message.photo.length - 1].file_id;
-  // Получаем ссылку на файл
-  const file = await ctx.telegram.getFile(fileId);
-  const fileUrl = `https://api.telegram.org/file/bot${bot.token}/${file.file_path}`;
-  // Здесь твоя логика загрузки фото на сайт/Google Drive/Sheets
-  // Например, отправить ссылку в Google Таблицу или Object Storage
-  await ctx.reply('Фото получено и отправлено на сайт!');
+// 3. Обработка callback-кнопок для отзывов
+bot.on("callback_query", async (ctx) => {
+  await ctx.answerCbQuery(); // Сразу отвечаем Telegram
+
+  const data = ctx.callbackQuery.data;
+  if (data.startsWith("publish_")) {
+    const id = data.replace("publish_", "");
+    await axios.get(
+      `https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?action=reject&id=${id}`,
+    );
+    await ctx.reply("Отзыв отклонён.");
+  }
+});
+
+// 4. Обработка фото для галереи
+bot.on("photo", async (ctx) => {
+  const caption = ctx.message.caption || "";
+  if (
+    caption.toLowerCase().includes("загрузить") ||
+    caption.toLowerCase().includes("/загрузить")
+  ) {
+    const fileId = ctx.message.photo[ctx.message.photo.length - 1].file_id;
+    const file = await ctx.telegram.getFile(fileId);
+    const fileUrl = `https://api.telegram.org/file/bot${bot.token}/${file.file_path}`;
+
+    // Скачиваем файл
+    const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
+    const base64 = Buffer.from(response.data, "binary").toString("base64");
+
+    // Отправляем на Apps Script
+    await axios.post(
+      "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?type=photo",
+      {
+        base64,
+        filename: path.basename(file.file_path),
+        contentType: "image/jpeg",
+        uploader: ctx.from.username || ctx.from.first_name || "",
+        caption,
+      },
+    );
+
+    await ctx.reply("Фото успешно загружено в галерею сайта!");
+  }
+});
+
+// 5. Логирование всех сообщений (опционально)
+bot.on("message", (ctx) => {
+  if (ctx.message.text) {
+    console.log("Получено сообщение:", ctx.message.text);
+  }
 });
 
 bot.launch();
