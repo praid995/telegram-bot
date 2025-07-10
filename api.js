@@ -81,17 +81,15 @@ bot.on("message", (ctx) => {
   if (ctx.message.text) {
     console.log("Получено сообщение:", ctx.message.text);
   }
-});
+});782636642
 
 // --- HTTP API для сайта ---
 // Пример: обработка POST-запроса с отзывом
 app.post("/send-review", async (req, res) => {
   const { name, review, date } = req.body;
-  // Здесь можно отправить отзыв в Telegram, Google Sheets и т.д.
-  // Например, отправить в чат Telegram:
   try {
     await bot.telegram.sendMessage(
-      "782636642", // замени на chat_id заказчика
+      "782636642", // chat_id заказчика
       `Новый отзыв:\nИмя: ${name}\nДата: ${date}\nОтзыв: ${review}`
     );
     res.json({ success: true });
@@ -101,7 +99,7 @@ app.post("/send-review", async (req, res) => {
 });
 
 // --- Запуск сервера и бота ---
-const PORT = 8080;
+const PORT = 80;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`API server started on port ${PORT}`);
 });
