@@ -100,7 +100,7 @@ app.post("/send-review", async (req, res) => {
 
 // --- Запуск сервера и бота ---
 const PORT = 8080;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`API server started on port ${PORT}`);
+app.listen(8080, '0.0.0.0', () => {
+  console.log(`API server started on port ${8080}`);
 });
 bot.launch();
