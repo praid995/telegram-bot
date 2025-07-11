@@ -7,7 +7,15 @@ import path from "path";
 
 // 1. Настройка Express
 const app = express();
-app.use(cors());
+ app.use(cors({
+     origin: [
+       'http://localhost:3000',
+       'http://localhost:3001',
+       'http://semshow.ru',
+       'https://semshow.ru'
+     ],
+     credentials: true
+   }));
 app.use(express.json());
 
 // 2. Настройка Telegram-бота
@@ -81,7 +89,7 @@ bot.on("message", (ctx) => {
   if (ctx.message.text) {
     console.log("Получено сообщение:", ctx.message.text);
   }
-});782636642
+});
 
 // --- HTTP API для сайта ---
 // Пример: обработка POST-запроса с отзывом
