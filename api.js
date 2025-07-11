@@ -97,7 +97,7 @@ app.post("/send-review", async (req, res) => {
   const { name, review, date } = req.body;
   try {
     await bot.telegram.sendMessage(
-      "782636642", // chat_id заказчика
+      "532377079", // chat_id заказчика
       `Новый отзыв:\nИмя: ${name}\nДата: ${date}\nОтзыв: ${review}`
     );
     res.json({ success: true });
