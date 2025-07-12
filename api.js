@@ -31,27 +31,7 @@ bot.command("booking", async (ctx) => {
   }
   const date = parts[1];
   await axios.post(
-    "https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?type=booking",
-    {
-      date,
-      source: "telegram",
-      comment: `Бронирование через Telegram от ${ctx.from.username || ctx.from.first_name || ""}`,
-    },
-  );
-  await ctx.reply(`Дата ${date} забронирована!`);
-});
-
-// Добавляю поддержку команд 'Бронь' и 'бронь' (на русском)
-bot.hears(["Бронь", "бронь"], async (ctx) => {
-  const parts = ctx.message.text.split(" ");
-  if (parts.length < 2) {
-    return ctx.reply(
-      "Пожалуйста, укажите дату в формате ГГГГ-ММ-ДД, например: Бронь 2025-07-10",
-    );
-  }
-  const date = parts[1];
-  await axios.post(
-    "https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?type=booking",
+    "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?type=booking",
     {
       date,
       source: "telegram",
@@ -68,13 +48,7 @@ bot.on("callback_query", async (ctx) => {
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?action=publish&id=${id}`
-    );
-    await ctx.reply("Отзыв опубликован.");
-  } else if (data.startsWith("reject_")) {
-    const id = data.replace("reject_", "");
-    await axios.get(
-      `https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?action=reject&id=${id}`
+      `https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?action=reject&id=${id}`,
     );
     await ctx.reply("Отзыв отклонён.");
   }
@@ -93,7 +67,7 @@ bot.on("photo", async (ctx) => {
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
     const base64 = Buffer.from(response.data, "binary").toString("base64");
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?type=photo",
+      "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?type=photo",
       {
         base64,
         filename: path.basename(file.file_path),
@@ -116,33 +90,13 @@ bot.on("message", (ctx) => {
 // --- HTTP API для сайта ---
 // Пример: обработка POST-запроса с отзывом
 app.post("/send-review", async (req, res) => {
-  const { name, review, date, event, photo } = req.body;
+  const { name, review, date } = req.body;
   try {
-    // Просто пересылаем данные в Google Apps Script
-    await axios.post(
-      "https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec", // <-- сюда вставьте ваш Apps Script endpoint
-      {
-        name,
-        review,
-        date,
-        event,
-        photo
-      }
+    await bot.telegram.sendMessage(
+      "532377079", // chat_id заказчика
+      `Новый отзыв:\nИмя: ${name}\nДата: ${date}\nОтзыв: ${review}`
     );
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// Прокси для получения дат с Google Apps Script
-app.get('/exec', async (req, res) => {
-  try {
-    // Проксируем все query параметры
-    const params = new URLSearchParams(req.query).toString();
-    const url = `https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?${params}`;
-    const response = await axios.get(url);
-    res.json(response.data);
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
