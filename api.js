@@ -47,8 +47,16 @@ bot.on("callback_query", async (ctx) => {
   const data = ctx.callbackQuery.data;
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
+    // Публикация
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?action=reject&id=${id}`,
+      `https://script.google.com/macros/s/ВАШ_ID/exec?action=publish&id=${id}`
+    );
+    await ctx.reply("Отзыв опубликован.");
+  } else if (data.startsWith("reject_")) {
+    const id = data.replace("reject_", "");
+    // Отклонение
+    await axios.get(
+      `https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec`
     );
     await ctx.reply("Отзыв отклонён.");
   }
