@@ -99,13 +99,29 @@ bot.on("message", (ctx) => {
 app.post("/send-review", async (req, res) => {
   const { name, event, date, review, photo } = req.body;
   try {
-    // Генерируем уникальный id для отзыва
+    // 1. Генерируем id
     const id = Date.now().toString();
-    // Сохраняем отзыв в памяти (или в файл/БД, если нужно)
+
+    // 2. Сохраняем в память
     if (!global.reviews) global.reviews = [];
     global.reviews.push({ id, name, event, date, review, photo, status: "pending" });
 
-    // Формируем сообщение с кнопками
+    // 3. Отправляем в Google Таблицу
+    await axios.post(
+      "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec",
+      {
+        id,
+        name,
+        event,
+        date,
+        review,
+        photo,
+        status: "pending"
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    // 4. Отправляем сообщение с кнопками
     let message = `Новый отзыв!\n\n`;
     message += `Имя: ${name}\n`;
     if (event) message += `Мероприятие: ${event}\n`;
@@ -123,7 +139,7 @@ app.post("/send-review", async (req, res) => {
     };
 
     await bot.telegram.sendMessage(
-      "532377079", // chat_id заказчика
+      "532377079",
       message,
       { reply_markup: keyboard }
     );
