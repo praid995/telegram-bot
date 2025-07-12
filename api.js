@@ -145,6 +145,10 @@ bot.on("callback_query", async (ctx) => {
       const review = global.reviews.find(r => r.id === id);
       if (review) {
         review.status = "published";
+        // Обновляем статус в Google Таблице
+        try {
+          await axios.get(`https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?action=publish&id=${id}`);
+        } catch (e) { /* можно залогировать ошибку */ }
         await ctx.reply("Отзыв опубликован!");
         return;
       }
@@ -156,6 +160,10 @@ bot.on("callback_query", async (ctx) => {
       const review = global.reviews.find(r => r.id === id);
       if (review) {
         review.status = "rejected";
+        // Обновляем статус в Google Таблице
+        try {
+          await axios.get(`https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?action=reject&id=${id}`);
+        } catch (e) { /* можно залогировать ошибку */ }
         await ctx.reply("Отзыв отклонён.");
         return;
       }
