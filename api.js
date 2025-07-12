@@ -47,16 +47,14 @@ bot.on("callback_query", async (ctx) => {
   const data = ctx.callbackQuery.data;
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
-    // Публикация
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec`
+      `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?action=publish&id=${id}`
     );
     await ctx.reply("Отзыв опубликован.");
   } else if (data.startsWith("reject_")) {
     const id = data.replace("reject_", "");
-    // Отклонение
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec`
+      `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?action=reject&id=${id}`
     );
     await ctx.reply("Отзыв отклонён.");
   }
