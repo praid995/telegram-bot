@@ -31,7 +31,7 @@ bot.command("booking", async (ctx) => {
   }
   const date = parts[1];
   await axios.post(
-    "https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?type=booking",
+    "https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?type=booking",
     {
       date,
       source: "telegram",
@@ -51,7 +51,7 @@ bot.hears(["Бронь", "бронь"], async (ctx) => {
   }
   const date = parts[1];
   await axios.post(
-    "https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?type=booking",
+    "https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?type=booking",
     {
       date,
       source: "telegram",
@@ -68,13 +68,13 @@ bot.on("callback_query", async (ctx) => {
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?action=publish&id=${id}`
+      `https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?action=publish&id=${id}`
     );
     await ctx.reply("Отзыв опубликован.");
   } else if (data.startsWith("reject_")) {
     const id = data.replace("reject_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?action=reject&id=${id}`
+      `https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?action=reject&id=${id}`
     );
     await ctx.reply("Отзыв отклонён.");
   }
@@ -93,7 +93,7 @@ bot.on("photo", async (ctx) => {
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
     const base64 = Buffer.from(response.data, "binary").toString("base64");
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?type=photo",
+      "https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?type=photo",
       {
         base64,
         filename: path.basename(file.file_path),
@@ -120,7 +120,7 @@ app.post("/send-review", async (req, res) => {
   try {
     // Просто пересылаем данные в Google Apps Script
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec", // <-- сюда вставьте ваш Apps Script endpoint
+      "https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec", // <-- сюда вставьте ваш Apps Script endpoint
       {
         name,
         review,
@@ -140,7 +140,7 @@ app.get('/exec', async (req, res) => {
   try {
     // Проксируем все query параметры
     const params = new URLSearchParams(req.query).toString();
-    const url = `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?${params}`;
+    const url = `https://script.google.com/macros/s/AKfycbww6I2TxJSvJ5aCQYP7suoGjxoqWhq0_2tMAdjCAjRtwRtIlwq_OJPB42_LMvCyj77IrA/exec?${params}`;
     const response = await axios.get(url);
     res.json(response.data);
   } catch (err) {
