@@ -94,7 +94,7 @@ app.post("/send-review", async (req, res) => {
   try {
     // Просто пересылаем данные в Google Apps Script
     await axios.post(
-      "ВАШ_URL_СКРИПТА", // <-- сюда вставьте ваш Apps Script endpoint
+      "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec", // <-- сюда вставьте ваш Apps Script endpoint
       {
         name,
         review,
