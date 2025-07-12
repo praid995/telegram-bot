@@ -97,15 +97,70 @@ bot.on("message", (ctx) => {
 // --- HTTP API для сайта ---
 // Пример: обработка POST-запроса с отзывом
 app.post("/send-review", async (req, res) => {
-  const { name, review, date } = req.body;
+  const { name, event, date, review, photo } = req.body;
   try {
+    // Генерируем уникальный id для отзыва
+    const id = Date.now().toString();
+    // Сохраняем отзыв в памяти (или в файл/БД, если нужно)
+    if (!global.reviews) global.reviews = [];
+    global.reviews.push({ id, name, event, date, review, photo, status: "pending" });
+
+    // Формируем сообщение с кнопками
+    let message = `Новый отзыв!\n\n`;
+    message += `Имя: ${name}\n`;
+    if (event) message += `Мероприятие: ${event}\n`;
+    message += `Дата: ${date}\n`;
+    message += `Отзыв: ${review}\n`;
+    if (photo) message += `Фото: ${photo}\n`;
+
+    const keyboard = {
+      inline_keyboard: [
+        [
+          { text: "Опубликовать", callback_data: `publish_${id}` },
+          { text: "Отклонить", callback_data: `reject_${id}` }
+        ]
+      ]
+    };
+
     await bot.telegram.sendMessage(
       "532377079", // chat_id заказчика
-      `Новый отзыв:\nИмя: ${name}\nДата: ${date}\nОтзыв: ${review}`
+      message,
+      { reply_markup: keyboard }
     );
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// --- Обработка callback-кнопок для отзывов ---
+bot.on("callback_query", async (ctx) => {
+  await ctx.answerCbQuery();
+  const data = ctx.callbackQuery.data;
+
+  if (data.startsWith("publish_")) {
+    const id = data.replace("publish_", "");
+    // Ищем отзыв и меняем статус
+    if (global.reviews) {
+      const review = global.reviews.find(r => r.id === id);
+      if (review) {
+        review.status = "published";
+        await ctx.reply("Отзыв опубликован!");
+        return;
+      }
+    }
+    await ctx.reply("Отзыв не найден.");
+  } else if (data.startsWith("reject_")) {
+    const id = data.replace("reject_", "");
+    if (global.reviews) {
+      const review = global.reviews.find(r => r.id === id);
+      if (review) {
+        review.status = "rejected";
+        await ctx.reply("Отзыв отклонён.");
+        return;
+      }
+    }
+    await ctx.reply("Отзыв не найден.");
   }
 });
 
