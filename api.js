@@ -49,7 +49,7 @@ bot.on("callback_query", async (ctx) => {
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?action=publish&id=${id}`,
+      `https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?action=publish&id=${id}`,
     );
     await ctx.reply("Отзыв опубликован!");
   } else if (data.startsWith("reject_")) {
@@ -74,7 +74,7 @@ bot.on("photo", async (ctx) => {
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
     const base64 = Buffer.from(response.data, "binary").toString("base64");
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec/exec?type=photo",
+      "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?type=photo",
       {
         base64,
         filename: path.basename(file.file_path),
@@ -95,7 +95,25 @@ bot.on("message", (ctx) => {
 });
 
 // --- HTTP API для сайта ---
-// Удаляю обработку POST-запроса с отзывом, чтобы отзывы отправлялись только в Google Apps Script
+app.post("/send-review", async (req, res) => {
+  const { name, review, date, event, photo } = req.body;
+  try {
+    // Просто пересылаем данные в Google Apps Script
+    await axios.post(
+      "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec", // <-- сюда вставьте ваш Apps Script endpoint
+      {
+        name,
+        review,
+        date,
+        event,
+        photo
+      }
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 // --- Запуск сервера и бота ---
 const PORT = 8080;
