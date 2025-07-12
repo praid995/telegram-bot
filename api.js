@@ -41,6 +41,26 @@ bot.command("booking", async (ctx) => {
   await ctx.reply(`Дата ${date} забронирована!`);
 });
 
+// Добавляю поддержку команд 'Бронь' и 'бронь' (на русском)
+bot.hears(["Бронь", "бронь"], async (ctx) => {
+  const parts = ctx.message.text.split(" ");
+  if (parts.length < 2) {
+    return ctx.reply(
+      "Пожалуйста, укажите дату в формате ГГГГ-ММ-ДД, например: Бронь 2025-07-10",
+    );
+  }
+  const date = parts[1];
+  await axios.post(
+    "https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?type=booking",
+    {
+      date,
+      source: "telegram",
+      comment: `Бронирование через Telegram от ${ctx.from.username || ctx.from.first_name || ""}`,
+    },
+  );
+  await ctx.reply(`Дата ${date} забронирована!`);
+});
+
 // Callback-кнопки для отзывов
 bot.on("callback_query", async (ctx) => {
   await ctx.answerCbQuery();
@@ -110,6 +130,19 @@ app.post("/send-review", async (req, res) => {
       }
     );
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Прокси для получения дат с Google Apps Script
+app.get('/exec', async (req, res) => {
+  try {
+    // Проксируем все query параметры
+    const params = new URLSearchParams(req.query).toString();
+    const url = `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?${params}`;
+    const response = await axios.get(url);
+    res.json(response.data);
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
