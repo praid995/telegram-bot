@@ -31,7 +31,7 @@ bot.command("booking", async (ctx) => {
   }
   const date = parts[1];
   await axios.post(
-    "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?type=booking",
+    "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?type=booking",
     {
       date,
       source: "telegram",
@@ -45,10 +45,17 @@ bot.command("booking", async (ctx) => {
 bot.on("callback_query", async (ctx) => {
   await ctx.answerCbQuery();
   const data = ctx.callbackQuery.data;
+  
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?action=reject&id=${id}`,
+      `https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?action=publish&id=${id}`,
+    );
+    await ctx.reply("Отзыв опубликован!");
+  } else if (data.startsWith("reject_")) {
+    const id = data.replace("reject_", "");
+    await axios.get(
+      `https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?action=reject&id=${id}`,
     );
     await ctx.reply("Отзыв отклонён.");
   }
@@ -67,7 +74,7 @@ bot.on("photo", async (ctx) => {
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
     const base64 = Buffer.from(response.data, "binary").toString("base64");
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?type=photo",
+      "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?type=photo",
       {
         base64,
         filename: path.basename(file.file_path),
