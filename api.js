@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { Telegraf, Markup } from "telegraf";
+import { Telegraf } from "telegraf";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
@@ -8,22 +8,17 @@ import path from "path";
 // 1. Настройка Express
 const app = express();
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://semshow.ru',
-    'https://semshow.ru'
-  ],
+  origin: ['https://semshow.ru', 'http://semshow.ru'],
+  methods: ['POST', 'GET'],
   credentials: true
 }));
 app.use(express.json());
 
 // 2. Настройка Telegram-бота
 const bot = new Telegraf("8147984791:AAG-wpGksEE2g0bZDmeTXxf9VPtCct5K7dM");
-const ADMIN_CHAT_ID = "532377079"; // chat_id заказчика
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec";
 
 // --- Твои обработчики бота ---
+// Приветствие
 bot.start((ctx) => ctx.reply("Бот работает!"));
 
 // Команда бронирования даты
@@ -36,7 +31,7 @@ bot.command("booking", async (ctx) => {
   }
   const date = parts[1];
   await axios.post(
-    `${GOOGLE_SCRIPT_URL}?type=booking`,
+    "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?type=booking",
     {
       date,
       source: "telegram",
@@ -52,16 +47,10 @@ bot.on("callback_query", async (ctx) => {
   const data = ctx.callbackQuery.data;
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
-    // Меняем статус на published
-    await axios.get(`${GOOGLE_SCRIPT_URL}?action=publish&id=${id}`);
-    await ctx.editMessageReplyMarkup(); // убираем кнопки
-    await ctx.reply("Отзыв опубликован и теперь виден на сайте!");
-  } else if (data.startsWith("reject_")) {
-    const id = data.replace("reject_", "");
-    // Удаляем отзыв
-    await axios.get(`${GOOGLE_SCRIPT_URL}?action=reject&id=${id}`);
-    await ctx.editMessageReplyMarkup(); // убираем кнопки
-    await ctx.reply("Отзыв отклонён и удалён из таблицы.");
+    await axios.get(
+      `https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?action=reject&id=${id}`,
+    );
+    await ctx.reply("Отзыв отклонён.");
   }
 });
 
@@ -78,7 +67,7 @@ bot.on("photo", async (ctx) => {
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
     const base64 = Buffer.from(response.data, "binary").toString("base64");
     await axios.post(
-      `${GOOGLE_SCRIPT_URL}?type=photo`,
+      "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?type=photo",
       {
         base64,
         filename: path.basename(file.file_path),
@@ -99,33 +88,20 @@ bot.on("message", (ctx) => {
 });
 
 // --- HTTP API для сайта ---
-// Обработка POST-запроса с отзывом
+// Пример: обработка POST-запроса с отзывом
 app.post("/send-review", async (req, res) => {
   const { name, review, date, event, photo } = req.body;
   try {
-    // 1. Сохраняем отзыв в Google Таблицу через Apps Script
-    const gsRes = await axios.post(`${GOOGLE_SCRIPT_URL}?type=review`, {
-      name,
-      event,
-      date,
-      review,
-      photo,
-    });
-    const { id } = gsRes.data;
-    // 2. Отправляем заказчику в Telegram с кнопками
-    await bot.telegram.sendMessage(
-      ADMIN_CHAT_ID,
-      `Новый отзыв:
-Имя: ${name}
-Мероприятие: ${event}
-Дата: ${date}
-Отзыв: ${review}`,
-      Markup.inlineKeyboard([
-        [
-          Markup.button.callback("✅ Опубликовать", `publish_${id}`),
-          Markup.button.callback("❌ Отклонить", `reject_${id}`)
-        ]
-      ])
+    // Просто пересылаем данные в Google Apps Script
+    await axios.post(
+      "ВАШ_URL_СКРИПТА", // <-- сюда вставьте ваш Apps Script endpoint
+      {
+        name,
+        review,
+        date,
+        event,
+        photo
+      }
     );
     res.json({ success: true });
   } catch (err) {
