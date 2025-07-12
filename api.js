@@ -31,7 +31,7 @@ bot.command("booking", async (ctx) => {
   }
   const date = parts[1];
   await axios.post(
-    "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?type=booking",
+    "https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?type=booking",
     {
       date,
       source: "telegram",
@@ -49,14 +49,14 @@ bot.on("callback_query", async (ctx) => {
     const id = data.replace("publish_", "");
     // Публикация
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec`
+      `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec`
     );
     await ctx.reply("Отзыв опубликован.");
   } else if (data.startsWith("reject_")) {
     const id = data.replace("reject_", "");
     // Отклонение
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec`
+      `https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec`
     );
     await ctx.reply("Отзыв отклонён.");
   }
@@ -75,7 +75,7 @@ bot.on("photo", async (ctx) => {
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
     const base64 = Buffer.from(response.data, "binary").toString("base64");
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec?type=photo",
+      "https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec?type=photo",
       {
         base64,
         filename: path.basename(file.file_path),
@@ -102,7 +102,7 @@ app.post("/send-review", async (req, res) => {
   try {
     // Просто пересылаем данные в Google Apps Script
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbyKCa3kdGmkYt_helZZ7oORyE56OL1krAmB1CE0qB4XOjfGpyJtdNuGmEdDPSkxMjV2lQ/exec", // <-- сюда вставьте ваш Apps Script endpoint
+      "https://script.google.com/macros/s/AKfycbzNOUyzsBx0XHjOx_ZUKc5XJVDKJZbjPcA-LcxQ9RiLeWlqzIf6xnhCVjqlN5Pli-1cPg/exec", // <-- сюда вставьте ваш Apps Script endpoint
       {
         name,
         review,
