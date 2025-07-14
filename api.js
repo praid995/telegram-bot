@@ -45,13 +45,12 @@ bot.command("booking", async (ctx) => {
 bot.on("callback_query", async (ctx) => {
   await ctx.answerCbQuery();
   const data = ctx.callbackQuery.data;
-  
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
     await axios.get(
       `https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?action=publish&id=${id}`,
     );
-    await ctx.reply("Отзыв опубликован!");
+    await ctx.reply("Отзыв опубликован.");
   } else if (data.startsWith("reject_")) {
     const id = data.replace("reject_", "");
     await axios.get(
