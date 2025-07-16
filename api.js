@@ -97,12 +97,31 @@ bot.on("photo", async (ctx) => {
       // Добавь эту строку для отладки:
       console.log('Ответ от ImageBan:', uploadResponse.data);
 
-      if (!uploadResponse.data || !uploadResponse.data.data || !uploadResponse.data.data.url) {
-        console.error('Некорректный ответ от ImageBan:', uploadResponse.data);
+      const data = uploadResponse.data;
+      let imageUrl = null;
+
+      if (data && data.data) {
+        // Если data.data — строка
+        if (typeof data.data === 'string' && data.data.startsWith('http')) {
+          imageUrl = data.data;
+        }
+        // Если data.data — объект с нужным полем
+        else if (typeof data.data === 'object') {
+          // Попробуй найти прямую ссылку по ключам
+          for (const key in data.data) {
+            if (typeof data.data[key] === 'string' && data.data[key].startsWith('https://i6.imageban.ru/out/')) {
+              imageUrl = data.data[key];
+              break;
+            }
+          }
+        }
+      }
+
+      if (!imageUrl) {
+        console.error('Некорректный ответ от ImageBan:', data);
         await ctx.reply('Ошибка: не удалось получить ссылку на изображение от ImageBan!');
         return;
       }
-      const imageUrl = uploadResponse.data.data.url; // Прямая ссылка на картинку
 
       // Сохраняем ссылку в Google Таблицу
       await axios.post(
