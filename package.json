@@ -2,6 +2,10 @@
   "name": "telegram-bot",
   "version": "1.0.0",
   "type": "module",
+  "main": "api.js",
+  "scripts": {
+    "start": "node api.js"
+  },
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
