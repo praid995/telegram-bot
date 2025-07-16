@@ -32,7 +32,7 @@ bot.command("booking", async (ctx) => {
   }
   const date = parts[1];
   await axios.post(
-    "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec/exec?type=booking",
+    "https://script.google.com/macros/s/AKfycbxu10fVDGefjYHKaSDkOQLD4HoSJ89OUiXAo6O5S0WWw4sJbrvIE8LUmO086K-f3epIvw/exec?type=booking",
     {
       date,
       source: "telegram",
@@ -49,13 +49,13 @@ bot.on("callback_query", async (ctx) => {
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?action=publish&id=${id}`,
+      `https://script.google.com/macros/s/AKfycbxu10fVDGefjYHKaSDkOQLD4HoSJ89OUiXAo6O5S0WWw4sJbrvIE8LUmO086K-f3epIvw/exec?action=publish&id=${id}`,
     );
     await ctx.reply("Отзыв опубликован.");
   } else if (data.startsWith("reject_")) {
     const id = data.replace("reject_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?action=reject&id=${id}`,
+      `https://script.google.com/macros/s/AKfycbxu10fVDGefjYHKaSDkOQLD4HoSJ89OUiXAo6O5S0WWw4sJbrvIE8LUmO086K-f3epIvw/exec?action=reject&id=${id}`,
     );
     await ctx.reply("Отзыв отклонён.");
   }
@@ -128,7 +128,7 @@ bot.on("photo", async (ctx) => {
 
       // Сохраняем ссылку в Google Таблицу
       await axios.post(
-        "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?type=photo",
+        "https://script.google.com/macros/s/AKfycbxu10fVDGefjYHKaSDkOQLD4HoSJ89OUiXAo6O5S0WWw4sJbrvIE8LUmO086K-f3epIvw/exec?type=photo",
         {
           photo_url: imageUrl,
           filename: path.basename(file.file_path),
@@ -159,7 +159,7 @@ app.post("/send-review", async (req, res) => {
   try {
     // Просто пересылаем данные в Google Apps Script
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec", // <-- сюда вставьте ваш Apps Script endpoint
+      "https://script.google.com/macros/s/AKfycbxu10fVDGefjYHKaSDkOQLD4HoSJ89OUiXAo6O5S0WWw4sJbrvIE8LUmO086K-f3epIvw/exec", // <-- сюда вставьте ваш Apps Script endpoint
       {
         name,
         review,
