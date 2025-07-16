@@ -4,6 +4,7 @@ import { Telegraf } from "telegraf";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
+import FormData from "form-data";
 
 // 1. Настройка Express
 const app = express();
@@ -75,7 +76,6 @@ bot.on("photo", async (ctx) => {
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
 
     // Загрузка на ImageBan
-    const FormData = require('form-data');
     const form = new FormData();
     form.append('file', Buffer.from(response.data, "binary"), {
       filename: path.basename(file.file_path),
