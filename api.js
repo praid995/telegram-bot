@@ -5,6 +5,7 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 import FormData from "form-data";
+import qs from "qs"; // в начале файла, если не установлен: npm install qs
 
 // 1. Настройка Express
 const app = express();
@@ -127,13 +128,25 @@ bot.on("photo", async (ctx) => {
       }
 
       // Сохраняем ссылку в Google Таблицу
+      console.log('Данные для Google Таблицы:', {
+        photo_url: imageUrl,
+        filename: path.basename(file.file_path),
+        uploader: ctx.from.username || ctx.from.first_name || "",
+        caption,
+      });
+
       await axios.post(
         "https://script.google.com/macros/s/AKfycbxu10fVDGefjYHKaSDkOQLD4HoSJ89OUiXAo6O5S0WWw4sJbrvIE8LUmO086K-f3epIvw/exec?type=photo",
-        {
+        qs.stringify({
           photo_url: imageUrl,
           filename: path.basename(file.file_path),
           uploader: ctx.from.username || ctx.from.first_name || "",
           caption,
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
       );
 
