@@ -109,7 +109,10 @@ bot.on("photo", async (ctx) => {
         else if (typeof data.data === 'object') {
           // Попробуй найти прямую ссылку по ключам
           for (const key in data.data) {
-            if (typeof data.data[key] === 'string' && data.data[key].startsWith('https://i6.imageban.ru/out/')) {
+            if (
+              typeof data.data[key] === 'string' &&
+              /^https:\/\/i\d+\.imageban\.ru\/out\//.test(data.data[key])
+            ) {
               imageUrl = data.data[key];
               break;
             }
