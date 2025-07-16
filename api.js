@@ -71,17 +71,36 @@ bot.on("photo", async (ctx) => {
     const file = await ctx.telegram.getFile(fileId);
     const fileUrl = `https://api.telegram.org/file/bot${bot.token}/${file.file_path}`;
     const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
-    const base64 = Buffer.from(response.data, "binary").toString("base64");
+
+    // Загрузка на ImageBan
+    const FormData = require('form-data');
+    const form = new FormData();
+    form.append('file', Buffer.from(response.data, "binary"), {
+      filename: path.basename(file.file_path),
+      contentType: "image/jpeg"
+    });
+    form.append('client_id', 'bHl9OIjrV6N0Bw0ZrbtK');
+    form.append('secret_key', 'OXqAiHoaDv6TAmE8OAvX083BD6yaMD2kKRY');
+
+    const uploadResponse = await axios.post(
+      'https://api.imageban.ru/v1/image/upload',
+      form,
+      { headers: form.getHeaders() }
+    );
+
+    const imageUrl = uploadResponse.data.data.url; // Прямая ссылка на картинку
+
+    // Сохраняем ссылку в Google Таблицу
     await axios.post(
       "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?type=photo",
       {
-        base64,
+        photo_url: imageUrl,
         filename: path.basename(file.file_path),
-        contentType: "image/jpeg",
         uploader: ctx.from.username || ctx.from.first_name || "",
         caption,
-      },
+      }
     );
+
     await ctx.reply("Фото успешно загружено в галерею сайта!");
   }
 });
