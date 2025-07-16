@@ -94,6 +94,14 @@ bot.on("photo", async (ctx) => {
         }
       );
 
+      // Добавь эту строку для отладки:
+      console.log('Ответ от ImageBan:', uploadResponse.data);
+
+      if (!uploadResponse.data || !uploadResponse.data.data || !uploadResponse.data.data.url) {
+        console.error('Некорректный ответ от ImageBan:', uploadResponse.data);
+        await ctx.reply('Ошибка: не удалось получить ссылку на изображение от ImageBan!');
+        return;
+      }
       const imageUrl = uploadResponse.data.data.url; // Прямая ссылка на картинку
 
       // Сохраняем ссылку в Google Таблицу
