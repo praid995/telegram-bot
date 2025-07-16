@@ -77,7 +77,7 @@ bot.on("photo", async (ctx) => {
 
     // Загрузка на ImageBan
     const form = new FormData();
-    form.append('file', Buffer.from(response.data, "binary"), {
+    form.append('image', Buffer.from(response.data, "binary"), {
       filename: path.basename(file.file_path),
       contentType: "image/jpeg"
     });
