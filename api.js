@@ -65,7 +65,9 @@ bot.on("photo", async (ctx) => {
   const caption = ctx.message.caption || "";
   if (
     caption.toLowerCase().includes("загрузить") ||
-    caption.toLowerCase().includes("/загрузить")
+    caption.toLowerCase().includes("/загрузить") ||
+    caption.toLowerCase().includes("фото") ||
+    caption.toLowerCase().includes("/фото")
   ) {
     const fileId = ctx.message.photo[ctx.message.photo.length - 1].file_id;
     const file = await ctx.telegram.getFile(fileId);
@@ -79,29 +81,38 @@ bot.on("photo", async (ctx) => {
       filename: path.basename(file.file_path),
       contentType: "image/jpeg"
     });
-    form.append('client_id', 'bHl9OIjrV6N0Bw0ZrbtK');
-    form.append('secret_key', 'OXqAiHoaDv6TAmE8OAvX083BD6yaMD2kKRY');
 
-    const uploadResponse = await axios.post(
-      'https://api.imageban.ru/v1/image/upload',
-      form,
-      { headers: form.getHeaders() }
-    );
+    try {
+      const uploadResponse = await axios.post(
+        'https://api.imageban.ru/v1/image/upload',
+        form,
+        {
+          headers: {
+            ...form.getHeaders(),
+            Authorization: 'Bearer OXqAiHoaDv6TAmE8OAvX083BD6yaMD2kKRY'
+          }
+        }
+      );
 
-    const imageUrl = uploadResponse.data.data.url; // Прямая ссылка на картинку
+      const imageUrl = uploadResponse.data.data.url; // Прямая ссылка на картинку
 
-    // Сохраняем ссылку в Google Таблицу
-    await axios.post(
-      "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?type=photo",
-      {
-        photo_url: imageUrl,
-        filename: path.basename(file.file_path),
-        uploader: ctx.from.username || ctx.from.first_name || "",
-        caption,
-      }
-    );
+      // Сохраняем ссылку в Google Таблицу
+      await axios.post(
+        "https://script.google.com/macros/s/AKfycbz96G0EPgHYyOmaODTnQwe-39-WqF3Zy4cjjjCBr9x7JmEdi3eikkAnF7o5sEwtsYKPqg/exec?type=photo",
+        {
+          photo_url: imageUrl,
+          filename: path.basename(file.file_path),
+          uploader: ctx.from.username || ctx.from.first_name || "",
+          caption,
+        }
+      );
 
-    await ctx.reply("Фото успешно загружено в галерею сайта!");
+      await ctx.reply("Фото успешно загружено в галерею сайта!");
+    } catch (err) {
+      console.error('Ошибка загрузки на ImageBan:', err.response?.data || err.message);
+      await ctx.reply('Ошибка загрузки фото на ImageBan!');
+      return;
+    }
   }
 });
 
