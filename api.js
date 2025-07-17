@@ -24,7 +24,7 @@ const bot = new Telegraf("8147984791:AAG-wpGksEE2g0bZDmeTXxf9VPtCct5K7dM");
 bot.start((ctx) => ctx.reply("Бот работает!"));
 
 // Команда бронирования даты
-bot.command("booking", async (ctx) => {
+bot.command("бронь", async (ctx) => {
   const parts = ctx.message.text.split(" ");
   if (parts.length < 2) {
     return ctx.reply(
@@ -33,7 +33,7 @@ bot.command("booking", async (ctx) => {
   }
   const date = parts[1];
   await axios.post(
-    "https://script.google.com/macros/s/AKfycbwrJH8CEMa4rGiBoJ_nIuoGOZeOVVG-vPJxAXjq2UA7iVFbnVKSj8vTGrNgP_M1dSSvdg/exec?type=booking",
+    "https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec?type=booking",
     {
       date,
       source: "telegram",
@@ -50,13 +50,13 @@ bot.on("callback_query", async (ctx) => {
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbwrJH8CEMa4rGiBoJ_nIuoGOZeOVVG-vPJxAXjq2UA7iVFbnVKSj8vTGrNgP_M1dSSvdg/exec?action=publish&id=${id}`,
+      `https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec/exec?action=publish&id=${id}`,
     );
     await ctx.reply("Отзыв опубликован.");
   } else if (data.startsWith("reject_")) {
     const id = data.replace("reject_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbwrJH8CEMa4rGiBoJ_nIuoGOZeOVVG-vPJxAXjq2UA7iVFbnVKSj8vTGrNgP_M1dSSvdg/exec?action=reject&id=${id}`,
+      `https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec?action=reject&id=${id}`,
     );
     await ctx.reply("Отзыв отклонён.");
   }
@@ -136,7 +136,7 @@ bot.on("photo", async (ctx) => {
       });
 
       await axios.post(
-        "https://script.google.com/macros/s/AKfycbwrJH8CEMa4rGiBoJ_nIuoGOZeOVVG-vPJxAXjq2UA7iVFbnVKSj8vTGrNgP_M1dSSvdg/exec?type=photo",
+        "https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec?type=photo",
         qs.stringify({
           photo_url: imageUrl,
           filename: path.basename(file.file_path),
@@ -172,7 +172,7 @@ app.post("/send-review", async (req, res) => {
   try {
     // Просто пересылаем данные в Google Apps Script
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbwrJH8CEMa4rGiBoJ_nIuoGOZeOVVG-vPJxAXjq2UA7iVFbnVKSj8vTGrNgP_M1dSSvdg/exec",
+      "https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec",
       {
         name,
         review,
