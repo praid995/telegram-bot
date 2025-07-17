@@ -24,30 +24,23 @@ const bot = new Telegraf("8147984791:AAG-wpGksEE2g0bZDmeTXxf9VPtCct5K7dM");
 bot.start((ctx) => ctx.reply("Бот работает!"));
 
 // Команда бронирования даты
-bot.command("бронь", async (ctx) => {
-  try {
-    const parts = ctx.message.text.split(" ");
-    if (parts.length < 2) {
-      return ctx.reply(
-        "Пожалуйста, укажите дату в формате ГГГГ-ММ-ДД, например: бронь 2025-07-10",
-      );
-    }
-    const date = parts[1];
-    const response = await axios.post(
-      "https://script.google.com/macros/s/AKfycbwrJH8CEMa4rGiBoJ_nIuoGOZeOVVG-vPJxAXjq2UA7iVFbnVKSj8vTGrNgP_M1dSSvdg/exec?type=booking",
-      {
-        date,
-        source: "telegram",
-        comment: `Бронирование через Telegram от ${ctx.from.username || ctx.from.first_name || ""}`,
-      },
+bot.command("booking", async (ctx) => {
+  const parts = ctx.message.text.split(" ");
+  if (parts.length < 2) {
+    return ctx.reply(
+      "Пожалуйста, укажите дату в формате ГГГГ-ММ-ДД, например: /booking 2025-07-10",
     );
-    // Можно добавить лог:
-    console.log("Ответ Google Script:", response.data);
-    await ctx.reply(`Дата ${date} забронирована!`);
-  } catch (err) {
-    console.error("Ошибка при бронировании:", err.response?.data || err.message);
-    await ctx.reply("Ошибка при бронировании даты! Попробуйте позже.");
   }
+  const date = parts[1];
+  await axios.post(
+    "https://script.google.com/macros/s/AKfycbwrJH8CEMa4rGiBoJ_nIuoGOZeOVVG-vPJxAXjq2UA7iVFbnVKSj8vTGrNgP_M1dSSvdg/exec?type=booking",
+    {
+      date,
+      source: "telegram",
+      comment: `Бронирование через Telegram от ${ctx.from.username || ctx.from.first_name || ""}`,
+    },
+  );
+  await ctx.reply(`Дата ${date} забронирована!`);
 });
 
 // Callback-кнопки для отзывов
