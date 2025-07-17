@@ -24,7 +24,7 @@ const bot = new Telegraf("8147984791:AAG-wpGksEE2g0bZDmeTXxf9VPtCct5K7dM");
 bot.start((ctx) => ctx.reply("Бот работает!"));
 
 // Команда бронирования даты
-bot.command("бронь", async (ctx) => {
+bot.command("booking", async (ctx) => {
   const parts = ctx.message.text.split(" ");
   if (parts.length < 2) {
     return ctx.reply(
