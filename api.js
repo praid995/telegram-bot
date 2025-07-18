@@ -33,7 +33,7 @@ bot.command("booking", async (ctx) => {
   }
   const date = parts[1];
   await axios.post(
-    "https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec?type=booking",
+    "https://script.google.com/macros/s/AKfycbx50uM57r-axgW0bRTpX3iwecEPmZQxBkofOFNw7tUXCHLatRfSFVPSkXo_wMhPOKSD0g/exec?type=booking",
     {
       date,
       source: "telegram",
@@ -50,13 +50,13 @@ bot.on("callback_query", async (ctx) => {
   if (data.startsWith("publish_")) {
     const id = data.replace("publish_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec/exec?action=publish&id=${id}`,
+      `https://script.google.com/macros/s/AKfycbx50uM57r-axgW0bRTpX3iwecEPmZQxBkofOFNw7tUXCHLatRfSFVPSkXo_wMhPOKSD0g/exec?action=publish&id=${id}`,
     );
     await ctx.reply("Отзыв опубликован.");
   } else if (data.startsWith("reject_")) {
     const id = data.replace("reject_", "");
     await axios.get(
-      `https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec?action=reject&id=${id}`,
+      `https://script.google.com/macros/s/AKfycbx50uM57r-axgW0bRTpX3iwecEPmZQxBkofOFNw7tUXCHLatRfSFVPSkXo_wMhPOKSD0g/exec?action=reject&id=${id}`,
     );
     await ctx.reply("Отзыв отклонён.");
   }
@@ -136,7 +136,7 @@ bot.on("photo", async (ctx) => {
       });
 
       await axios.post(
-        "https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec?type=photo",
+        "https://script.google.com/macros/s/AKfycbx50uM57r-axgW0bRTpX3iwecEPmZQxBkofOFNw7tUXCHLatRfSFVPSkXo_wMhPOKSD0g/exec?type=photo",
         qs.stringify({
           photo_url: imageUrl,
           filename: path.basename(file.file_path),
@@ -172,7 +172,7 @@ app.post("/send-review", async (req, res) => {
   try {
     // Просто пересылаем данные в Google Apps Script
     await axios.post(
-      "https://script.google.com/macros/s/AKfycbznZFr5cCsqWSWsGX4w64b3-LiGfdXGCQ0Z7ypMmk1Wa-NL94R80qGaLKuQU_3FFXWEXw/exec",
+      "https://script.google.com/macros/s/AKfycbx50uM57r-axgW0bRTpX3iwecEPmZQxBkofOFNw7tUXCHLatRfSFVPSkXo_wMhPOKSD0g/exec",
       {
         name,
         review,
